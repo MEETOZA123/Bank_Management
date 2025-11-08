@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Account {
     @Id //marked as primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)  //just like auto increment
-    private long account_number;
+    private Long account_number;
     @Column
     private String account_holder_name;
     @Column

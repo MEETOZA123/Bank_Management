@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AccountServiceImpl implements AccountService{
@@ -21,27 +22,51 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public Account getAccountDetailsByAccountNumber(Long account_number) {
-        return null;
+    public Optional<Account> getAccountDetailsByAccountNumber(Long account_number) {
+        Optional<Account> account;
+        account=repo.findById(account_number);
+        return account;
     }
 
     @Override
     public List<Account> getALLAccountDetails() {
-        return List.of();
+        List<Account> allDetails;
+        allDetails=repo.findAll();
+        return allDetails;
     }
 
     @Override
     public Account depositAmount(Long accountNumber, Double amount) {
-        return null;
+        Account account = repo.findById(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account not found with number: " + accountNumber));
+
+        Double newBalance=account.getAccount_balance()+amount;
+        account.setAccount_balance(newBalance);
+
+        repo.save(account);
+
+        return account;
     }
 
     @Override
     public Account withdrawAmount(Long accountNumber, Double amount) {
-        return null;
+        Account account = repo.findById(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account not found with number: " + accountNumber));
+
+        Double newValue=account.getAccount_balance()-amount;
+        if(newValue<0){
+            throw new RuntimeException("Account not found with number: " + accountNumber);
+        }
+
+        account.setAccount_balance(newValue);
+        repo.save(account);
+        return account;
+
     }
 
     @Override
     public void closeAccount(Long account_number) {
-
+        repo.deleteById(account_number);
+        return;
     }
 }
